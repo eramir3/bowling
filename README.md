@@ -21,8 +21,6 @@ Bowling test for jobsity
  
 # Test Files
  
- - There are 6 files are located in the folder named file
- 
  - The default test file name for the app to run must be 
  
  ```
