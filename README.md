@@ -7,7 +7,7 @@ Bowling test for jobsity
  - Maven
  
 # Project compilation
- - For running the project use the command
+ - For running the project go to the source folder and execute the command
  
  ```
  mvn spring-boot:run 
