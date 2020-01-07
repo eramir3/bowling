@@ -19,8 +19,9 @@ Bowling test for jobsity
  mvn test
  ``` 
  
-# Test Files
+# Test File
  
+ - The test file is located in the files folder
  - The default test file name for the app to run must be 
  
  ```
