@@ -5,6 +5,7 @@ Bowling test for jobsity
  - Java
  - Spring
  - Maven
+ - The project will work with a maximum of two players
  
 # Project compilation
  - For running the project go to the source folder and execute the command
