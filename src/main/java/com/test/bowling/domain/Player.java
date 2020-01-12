@@ -8,16 +8,15 @@ public class Player {
 	
 	private int number;
 	
-	private int[] frames;
+	private Frame[] frames;
 	
-	private Roll[] rolls;
+	private Roll bonusRoll;
 	
-	
+	 
 	public Player(String name, int number) {
 		this.name = name;
 		this.number = number;
-		this.frames = new int[BowlingConstants.TOTAL_FRAMES];
-		this.rolls = new Roll[BowlingConstants.MAX_ATTEMPTS_ALLOWED + 1];
+		this.frames = new Frame[BowlingConstants.TOTAL_FRAMES];
 	}
 	
 	public String getName() {
@@ -35,20 +34,20 @@ public class Player {
 	public void setNumber(int number) {
 		this.number = number;
 	}
-
-	public Roll[] getRolls() {
-		return rolls;
+	
+	public Roll getBonusRoll() {
+		return bonusRoll;
 	}
 
-	public void setRolls(Roll[] rolls) {
-		this.rolls = rolls;
+	public void setBonusRoll(Roll bonusRoll) {
+		this.bonusRoll = bonusRoll;
 	}
-
-	public int[] getFrames() {
+	
+	public Frame[] getFrames() {
 		return frames;
 	}
 
-	public void setFrames(int[] frames) {
-		this.frames = frames;
+	public void setFrames(Frame[] frames2) {
+		this.frames = frames2;
 	}
 }

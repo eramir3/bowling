@@ -9,149 +9,71 @@ import com.test.bowling.utils.BowlingConstants;
 @Service
 public class PlayerService implements IPlayerService{
 
-	public int[] calculateScore(Player player) throws Exception {
+	
+	public Player calculateScore(Player player) {
 		
-		int section = BowlingConstants.FIRST_FRAME;
+		int total = 0;
 		
-		for(int i = 0; i < player.getRolls().length; i += 2) {
+		for(int i = 0; i < player.getFrames().length; i++) {
 			
-			validateSecondFramePinfall(player, i + 1);
+			int scoreRoll1 = player.getFrames()[i].getRoll1().getPinfalls();
+			int scoreRoll2 = player.getFrames()[i].getRoll2().getPinfalls() != BowlingConstants.EMPTY_ROLL ? player.getFrames()[i].getRoll2().getPinfalls() : 0;
 			
-			player.getRolls()[i].setFrame(section);
-			player.getRolls()[i + 1].setFrame(section);
+			total = scoreRoll1 + scoreRoll2;
 			
-			// Last frame score
-			if(section == BowlingConstants.LAST_FRAME) {
-				
-				if(player.getRolls()[i].getPinfalls() + player.getRolls()[i + 1].getPinfalls() == 10) {
-					validateSecondFramePinfall(player, i + 2);
-				}
-				
-				player.getFrames()[section] += calculateLastFrameScore(player, i, section);
-				break;
+			if(scoreRoll1 == BowlingConstants.MAX_PINFALL_SCORE && i != BowlingConstants.LAST_FRAME) {
+				total += calculateStrike(player, i + 1);
+			}
+			else if(scoreRoll1 + scoreRoll2 == BowlingConstants.MAX_PINFALL_SCORE && i != BowlingConstants.LAST_FRAME) {
+				total += calculateSpare(player, i + 1);
 			}
 			
-			player.getFrames()[section] += player.getRolls()[i].getPinfalls();
-			player.getFrames()[section] += player.getRolls()[i + 1].getPinfalls() == BowlingConstants.EMPTY_ROLL ? 0 : player.getRolls()[i + 1].getPinfalls();
-			
-			validateFrameScoreTotalSum(player, section);
-			
-			// Strikes
-			if(player.getFrames()[section] == BowlingConstants.MAX_PINFALL_SCORE 
-					&& player.getRolls()[i].getPinfalls() == BowlingConstants.MAX_PINFALL_SCORE) {
-				player.getFrames()[section] += calculateStrike(player, i);
-			}
-			// Spares
-			else if(player.getFrames()[section] == BowlingConstants.MAX_PINFALL_SCORE) {
-				player.getFrames()[section] += calculateSpare(player, i);
+			if(i != BowlingConstants.FIRST_FRAME) {
+				total += player.getFrames()[i - 1].getScore();
 			}
 			
-			// Award score to frame
-			awardScoreToFrame(player, section);
+			if(i == BowlingConstants.LAST_FRAME) {
+				total += player.getBonusRoll() != null ? player.getBonusRoll().getPinfalls() : 0;
+			}
 			
-			// Last paired frame
-			if(i > 17) 
-    			section = BowlingConstants.LAST_FRAME;
-    		else
-    			section++;
+			player.getFrames()[i].setScore(total);
 		}
 		
-		return player.getFrames();
+		return player;
 	}
 	
 	
-	public int calculateStrike(Player player, int i) throws Exception {
+	public int calculateStrike(Player player, int frame) {
 		
-		int pinfalls = 0;
 		int aux = 2;
-		int j = i + 1;
+		int total = 0;
 		
 		while(aux > 0) {
 			
-			if(player.getRolls()[j] == null) {
-				throw new Exception("Please enter all frame scores in file for player " + player.getName());
+			int scoreRoll1 = player.getFrames()[frame].getRoll1().getPinfalls();
+			int scoreRoll2 = player.getFrames()[frame].getRoll2().getPinfalls();
+			
+			if(scoreRoll1 != BowlingConstants.EMPTY_ROLL) {
+				total += scoreRoll1;
+				aux--;
+				
+				if(aux == 0)
+					break;
 			}
 			
-			if(player.getRolls()[j].getPinfalls() != -1) {
-				pinfalls += player.getRolls()[j].getPinfalls();
+			if(scoreRoll2 != BowlingConstants.EMPTY_ROLL) {
+				total += scoreRoll2;
 				aux--;
 			}
-			j++;
-		}
-		
-		return pinfalls;
-	}
-	
-	
-	public int calculateSpare(Player player, int i) throws Exception {
-		
-		int pinfalls = 0;
-		
-		if(player.getRolls()[i + 2] == null) {
-			throw new Exception("Please enter all frame scores in file for player " + player.getName());
-		}
-		
-		pinfalls += player.getRolls()[i + 2].getPinfalls();
-		
-		return pinfalls;
-	}
-	
-	
-	public int calculateLastFrameScore(Player player, int i, int section) throws Exception {
-		
-		int pinfalls = 0;
-		
-		if(player.getRolls()[i].getPinfalls() + player.getRolls()[i + 1].getPinfalls() > BowlingConstants.MAX_PINFALL_SCORE 
-				&& player.getRolls()[i].getPinfalls() != BowlingConstants.MAX_PINFALL_SCORE) {
-			throw new Exception("Invalid scores in frame " + (section + 1) + " for player " + player.getName());
-		}
-		
-		if(player.getRolls()[i + 2] != null) {
 			
-			if(player.getRolls()[i + 1].getPinfalls() + player.getRolls()[i + 2].getPinfalls() > BowlingConstants.MAX_PINFALL_SCORE 
-				&& player.getRolls()[i + 1].getPinfalls() != BowlingConstants.MAX_PINFALL_SCORE
-				&& player.getRolls()[i].getPinfalls() + player.getRolls()[i + 1].getPinfalls() != BowlingConstants.MAX_PINFALL_SCORE) {
-				throw new Exception("Invalid scores in frame " + (section + 1) + " for player " + player.getName());
-			}
-			
-			if(player.getRolls()[i].getPinfalls() + player.getRolls()[i + 1].getPinfalls() < BowlingConstants.MAX_PINFALL_SCORE) {
-				throw new Exception("Invalid scores in frame " + (section + 1) + " for player " + player.getName());
-			}
-			
-			if(player.getRolls()[i].getPinfalls() + player.getRolls()[i+1].getPinfalls() >= BowlingConstants.MAX_PINFALL_SCORE) {
-				pinfalls += player.getRolls()[i + 2].getPinfalls();
-			}
-			
-			player.getRolls()[i + 2].setFrame(section);
+			frame++;
 		}
 		
-		pinfalls += player.getRolls()[i].getPinfalls() + player.getRolls()[i+1].getPinfalls();
-		pinfalls += player.getFrames()[section - 1];
-		
-		return pinfalls;
+		return total;
 	}
 	
-	
-	public void awardScoreToFrame(Player player, int section) {
+	public int calculateSpare(Player player, int frame) {
 		
-		if(section != BowlingConstants.FIRST_FRAME) {
-			player.getFrames()[section] += player.getFrames()[section - 1];
-		}
-	}
-	
-	
-	public void validateSecondFramePinfall(Player player, int pinfalls) throws Exception {
-		 
-		if(player.getRolls()[pinfalls] == null) {
-			throw new Exception("Please enter all frame scores in file for player " + player.getName());
-		}
-	}
-	
-	
-	public void validateFrameScoreTotalSum(Player player, int section) throws Exception {
-		
-		if(player.getFrames()[section] > BowlingConstants.MAX_PINFALL_SCORE) {
-			throw new Exception("Invalid scores in frame " + (section + 1) + " for player " + player.getName());
-		}
+		return player.getFrames()[frame].getRoll1().getPinfalls();
 	}
 }

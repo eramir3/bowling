@@ -12,105 +12,118 @@ public class ScorePrinterService implements IScorePrinterService{
 	public void printScoreTable(Player player) {
 		
 		printFrameNumbers(player);
-		System.out.println();
-		System.out.println(player.getName());
-		System.out.print("Pinfalls	");
-		
-		for(int i = 0; i < player.getRolls().length; i++) {
-			
-			if(player.getRolls()[i] == null)
-				continue;
-			
-			if(player.getRolls()[i].getFrame() < BowlingConstants.LAST_FRAME) {
-				printFrames(player, i);
-			}
-			else {
-				printLastFrame(player, i);
-			}
-		}
-		
-		System.out.println();
+		printPlayerName(player);
+		printFrames(player);
+		printLastFrame(player);
 		printScores(player);
 	}
 	
 	public void printFrameNumbers(Player player) {
+		
 		if(player.getNumber() == BowlingConstants.PLAYER_ONE) {
 			System.out.print("Frame		");
 			for(int i = 0; i < BowlingConstants.LAST_FRAME + 1; i++) {
 				System.out.print(i + 1 + "		");
 			}
 		}
+		System.out.println();
+	}
+	
+	public void printPlayerName(Player player) {
+		System.out.println(player.getName());
+	}
+	
+	public void printFrames(Player player) {
+		
+		System.out.print("Pinfalls	");
+		
+		for(int i = 0; i < player.getFrames().length - 1; i++) {
+			
+			int playerScoreRoll1 = player.getFrames()[i].getRoll1().getPinfalls();
+			int playerScoreRoll2 = player.getFrames()[i].getRoll2().getPinfalls();
+			
+			if(playerScoreRoll1 == BowlingConstants.MAX_PINFALL_SCORE) {
+				System.out.print("	X	");
+				
+			}
+			else if(playerScoreRoll1 + playerScoreRoll2 == BowlingConstants.MAX_PINFALL_SCORE) {
+				
+				System.out.print(playerScoreRoll1 + "	");
+				System.out.print(" /	");
+			}
+			else {
+				
+				if(player.getFrames()[i].getRoll1().isFailed()) {
+					System.out.print("F	");
+				}
+				else {
+					System.out.print(playerScoreRoll1 + "	");
+				}
+				
+				if(player.getFrames()[i].getRoll2().isFailed()) {
+					System.out.print("F	");
+				}
+				else {
+					System.out.print(playerScoreRoll2 + "	");
+				}
+			}
+		}
+	}
+	
+	public void printLastFrame(Player player) {
+		
+		int playerScoreRoll1 = player.getFrames()[BowlingConstants.LAST_FRAME].getRoll1().getPinfalls();
+		int playerScoreRoll2 = player.getFrames()[BowlingConstants.LAST_FRAME].getRoll2().getPinfalls();
+		int playerBonusRoll = player.getBonusRoll() != null ? player.getBonusRoll().getPinfalls() : -1;
+		
+		if(playerScoreRoll1 == BowlingConstants.MAX_PINFALL_SCORE) {
+			System.out.print("X	");
+		}
+		else {
+			System.out.print(playerScoreRoll1 + "	");
+		}
+		
+		if(playerScoreRoll2 == BowlingConstants.MAX_PINFALL_SCORE) {
+			System.out.print("X	");
+		}
+		else {
+			
+			if(playerScoreRoll1 + playerScoreRoll2 == BowlingConstants.MAX_PINFALL_SCORE && playerScoreRoll1 != BowlingConstants.MAX_PINFALL_SCORE) {
+				System.out.print("/	");
+			}
+			if(player.getFrames()[BowlingConstants.LAST_FRAME].getRoll1().isFailed()) {
+				System.out.print("F	");
+			}
+			else {
+				System.out.print(playerScoreRoll2 + "	");
+			}
+		}
+		
+		if(playerBonusRoll == BowlingConstants.MAX_PINFALL_SCORE) {
+			System.out.print("X	");
+		}
+		else {
+			
+			if(playerScoreRoll2 + playerBonusRoll == BowlingConstants.MAX_PINFALL_SCORE && playerScoreRoll2 != BowlingConstants.MAX_PINFALL_SCORE) {
+				System.out.print("/	");
+			}
+			if(player.getFrames()[BowlingConstants.LAST_FRAME].getRoll2().isFailed()) {
+				System.out.print("F	");
+			}
+			else {
+				System.out.print(playerBonusRoll + "	");
+			}
+		}
+		
+		System.out.println();
 	}
 	
 	public void printScores(Player player) {
+		
 		System.out.print("Score		");
 		
 		for(int i = 0; i < player.getFrames().length; i++) {
-			System.out.print(player.getFrames()[i] + "		");
+			System.out.print(player.getFrames()[i].getScore() + "		");
 		}
-	}
-	
-	public void printFrames(Player player, int i) {
-		
-		if(player.getRolls()[i].getPinfalls() == BowlingConstants.MAX_PINFALL_SCORE
-				&& i % 2 != 0) {
-			System.out.print("/	");
-			return;
-		}
-		
-		if(player.getRolls()[i].getPinfalls() == BowlingConstants.MAX_PINFALL_SCORE) {
-			System.out.print("	");
-			return;
-		}
-		
-		if(player.getRolls()[i].getPinfalls() == BowlingConstants.EMPTY_ROLL) {
-			System.out.print("X	");
-			return;
-		}
-		
-		if(i != 0 && player.getRolls()[i].getFrame() == player.getRolls()[i - 1].getFrame()) {
-			
-			if(player.getRolls()[i].getPinfalls() + player.getRolls()[i - 1].getPinfalls() == BowlingConstants.MAX_PINFALL_SCORE) {
-				System.out.print("/	");
-				return;
-			}
-		}
-			
-		System.out.print(player.getRolls()[i].getPinfalls() + "	");
-	}
-	
-	public void printLastFrame(Player player, int i) {
-		
-		if(i == 20) {
-			
-			if(player.getRolls()[i].getPinfalls() + player.getRolls()[i - 1].getPinfalls() == BowlingConstants.MAX_PINFALL_SCORE
-				&& player.getRolls()[i - 1].getPinfalls() != BowlingConstants.MAX_PINFALL_SCORE
-				&& player.getRolls()[i - 2].getPinfalls() + player.getRolls()[i - 1].getPinfalls() != BowlingConstants.MAX_PINFALL_SCORE) {
-				System.out.print("/	");
-				return;
-			}
-			
-			if(player.getRolls()[i - 2].getPinfalls() == BowlingConstants.MAX_PINFALL_SCORE
-					&& player.getRolls()[i - 1].getPinfalls() == BowlingConstants.MIN_PINFALL_SCORE ) {
-				System.out.print("/	");
-				return;
-			}
-		}
-		
-		if(i == 19) {
-			
-			if(player.getRolls()[i].getPinfalls() + player.getRolls()[i - 1].getPinfalls() == BowlingConstants.MAX_PINFALL_SCORE
-				&& player.getRolls()[i - 1].getPinfalls() != BowlingConstants.MAX_PINFALL_SCORE) {
-				System.out.print("/	");
-				return;
-			}
-		}
-		
-		if(player.getRolls()[i].getPinfalls() == BowlingConstants.MAX_PINFALL_SCORE) {
-			System.out.print("X	");
-			return;
-		}
-		
-		System.out.print(player.getRolls()[i].getPinfalls() + "	");
 	}
 }

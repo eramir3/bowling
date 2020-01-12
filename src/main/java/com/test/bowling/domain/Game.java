@@ -1,5 +1,6 @@
 package com.test.bowling.domain;
 
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,29 +25,23 @@ public class Game {
 	@Autowired
 	private IScorePrinterService printer;
 	
-	private Player player1;
-	
-	private Player player2;
-
 	
 	public void loadGameData() {
 		
 		try {
 			
 			fileHandler.loadPlayers("files/bowling_scores.txt");
-			player1 = fileHandler.getPlayer1();
-			player2 = fileHandler.getPlayer2();
 			
-			if(player1 != null) {
-				playerService.calculateScore(player1);
-				printer.printScoreTable(player1);
-			}
-			
-			if(player2 != null) {
-				playerService.calculateScore(player2);
-				printer.printScoreTable(player2);
-			}
-			System.out.println();
+			for(Entry<String, Player> me : fileHandler.getPlayers().entrySet()) {
+				
+				Player player = me.getValue();
+				
+				for(int i = 0; i < player.getFrames().length; i++) {
+					playerService.calculateScore(player);
+				}
+				
+				printer.printScoreTable(player); 
+		    }
 		} 
 		catch (Exception e) {
 			LOGGER.log(Level.SEVERE, e.getMessage());

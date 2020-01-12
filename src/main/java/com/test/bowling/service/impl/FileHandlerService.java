@@ -1,10 +1,12 @@
 package com.test.bowling.service.impl;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import org.springframework.stereotype.Service;
 
+import com.test.bowling.domain.Frame;
 import com.test.bowling.domain.Player;
 import com.test.bowling.domain.Roll;
 import com.test.bowling.service.IFileHandlerService;
@@ -15,63 +17,37 @@ public class FileHandlerService implements IFileHandlerService {
 	
 	private Scanner scanner;
 	
-	private Player player1;
-	
-	private Player player2;
+	private HashMap<String, Player> players;
 	
 	
 	public void loadPlayers(String filename) throws Exception {
+		
+		players = new HashMap<String, Player>();
+		int playerNumber = 0;
 		
 		openFile(filename);
 		
 		while(scanner.hasNext()) {
 			
 			String name = scanner.next();
-    		scanner.next();
-    		
-    		if(player1 == null)
-    			player1 = new Player(name, 1);
-    		
-    		if(player1 != null && !player1.getName().equals(name))
-    			player2 = new Player(name, 2);
-    		
-    		if(player1 != null && player2 != null)
-    			break;
-		}
-		
-		closeFile();
-		
-		if(player1 != null)
-			loadPlayerScores(player1, filename);
-		
-		if(player2 != null)
-			loadPlayerScores(player2, filename);
-	}
-	
-	public void loadPlayerScores(Player player, String fileName) throws Exception {
-		
-		openFile(fileName);
-		
-		int attempt = 0;
-		
-    	while(scanner.hasNext()) {
-    		
-    		// name of player
-    		String name = scanner.next();
-    		
-    		// pinfalls
-    		String pinfallsData = scanner.next();
-    		
-    		if(!name.equals(player.getName()))
-    			continue;
-    		
-    		if(attempt > BowlingConstants.MAX_ATTEMPTS_ALLOWED) {
-    			throw new Exception("File has more rolls than allowed for player " + player.getName());
-    		}
-    		
-    		int pinfalls = 0;
-    		
-    		if(!pinfallsData.equals("F")) {
+			String pinfallsData = scanner.next();
+			int pinfalls = 0 ;
+			boolean failed = false;
+			
+			Player player = players.containsKey(name) ? players.get(name) : null;
+			
+			if(player == null) {
+				
+				player = new Player(name, ++playerNumber);
+				for(int i = 0; i < player.getFrames().length; i++) {
+					Frame frame = new Frame(i);
+					player.getFrames()[i] = frame;
+				}
+				
+				players.put(name, player);
+			}
+			
+			if(!pinfallsData.equals("F")) {
     			try {
     				pinfalls = Integer.parseInt(pinfallsData);
     		    } 
@@ -79,32 +55,67 @@ public class FileHandlerService implements IFileHandlerService {
     		        throw new NumberFormatException("Invalid pinfall score on file for player " + player.getName());
     		    }
     		}
-    		
-    		if(pinfalls < BowlingConstants.MIN_PINFALL_SCORE || pinfalls > BowlingConstants.MAX_PINFALL_SCORE) {
+			else {
+				failed = true;
+			}
+			
+			if(pinfalls < BowlingConstants.MIN_PINFALL_SCORE || pinfalls > BowlingConstants.MAX_PINFALL_SCORE) {
     			throw new Exception("Invalid pinfall score " + pinfalls + " on file" );
     		}
-    		
-    		Roll roll = new Roll();
-    		roll.setPinfalls(pinfalls);
 			
-    		player.getRolls()[attempt] = roll;
-    		
-    		if(pinfalls == BowlingConstants.MAX_PINFALL_SCORE 
-    				&& attempt < 17 && attempt % 2 == 0) {
-    			
-    			Roll roll2 = new Roll();
-        		roll2.setPinfalls(BowlingConstants.EMPTY_ROLL);
-    			player.getRolls()[++attempt] = roll2;
-    		}
-    		
-    		attempt++;
-    	}
-		
-    	if(attempt < BowlingConstants.MIN_ATTEMPTS_ALLOWED) {
-			throw new Exception("Please enter all frame scores to calculate final score of player " + player.getName());
+			// Bonus roll
+			if(player.getFrames()[BowlingConstants.LAST_FRAME].getRoll2() != null) {
+				
+				if(player.getBonusRoll() != null) {
+					throw new Exception("File has more rolls than allowed for player " + player.getName());
+				}
+				
+				if(player.getFrames()[BowlingConstants.LAST_FRAME].getRoll1().getPinfalls() + player.getFrames()[BowlingConstants.LAST_FRAME].getRoll2().getPinfalls() < BowlingConstants.MAX_PINFALL_SCORE) {
+					throw new Exception("No bonus roll allowed for player " + player.getName());
+				}
+				
+				Roll bonusRoll = new Roll(pinfalls, failed);
+				player.setBonusRoll(bonusRoll);
+				continue;
+			}
+			
+			
+			for(int i = 0; i < player.getFrames().length; i++) {
+				
+				if(!player.getFrames()[i].isAvailable())
+					continue;
+				
+				if(player.getFrames()[i].getRoll1() == null) {
+					
+					Roll roll1 = new Roll(pinfalls, failed);
+					player.getFrames()[i].setRoll1(roll1);
+					
+					if(pinfalls == BowlingConstants.MAX_PINFALL_SCORE && player.getFrames()[i].getNumber() < BowlingConstants.LAST_FRAME) {
+						Roll roll2 = new Roll(BowlingConstants.EMPTY_ROLL, false);
+						player.getFrames()[i].setRoll2(roll2);
+						player.getFrames()[i].setAvailable(false);
+					}
+				}
+				else {
+					Roll roll = new Roll(pinfalls, failed);
+					player.getFrames()[i].setRoll2(roll);
+					player.getFrames()[i].setAvailable(false);
+				}	
+				
+				break;
+			}
+			
 		}
-    	
-    	closeFile();
+		
+		closeFile();
+	}
+	
+	public HashMap<String, Player> getPlayers() {
+		return players;
+	}
+
+	public void setPlayers(HashMap<String, Player> players) {
+		this.players = players;
 	}
 	
 	public void openFile(String fileName) throws Exception {
@@ -121,12 +132,4 @@ public class FileHandlerService implements IFileHandlerService {
     	scanner.close();
     }
     
-    public Player getPlayer1() {
-		return player1;
-	}
-
-	public Player getPlayer2() {
-		return player2;
-	}
-
 }
