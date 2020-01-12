@@ -5,9 +5,7 @@ public class Roll {
 	private int frame;
 	
 	private int pinfalls;
-	
-	private boolean isAvailable;
-	
+		
 	private boolean isFailed;
 	
 	
@@ -17,16 +15,7 @@ public class Roll {
 	
 	public Roll(int pinfalls, boolean failed) {
 		this.pinfalls = pinfalls;
-		this.isAvailable = true;
 		this.isFailed = failed;
-	}
-
-	public boolean isAvailable() {
-		return isAvailable;
-	}
-
-	public void setAvailable(boolean isAvailable) {
-		this.isAvailable = isAvailable;
 	}
 
 	public boolean isFailed() {
