@@ -74,15 +74,22 @@ public class ScorePrinterService implements IScorePrinterService{
 		
 		int playerScoreRoll1 = player.getFrames()[BowlingConstants.LAST_FRAME].getRoll1().getPinfalls();
 		int playerScoreRoll2 = player.getFrames()[BowlingConstants.LAST_FRAME].getRoll2().getPinfalls();
-		int playerBonusRoll = player.getBonusRoll() != null ? player.getBonusRoll().getPinfalls() : -1;
+		int playerBonusRoll = player.getBonusRoll() != null ? player.getBonusRoll().getPinfalls() : BowlingConstants.EMPTY_ROLL;
 		
+		// Roll 1
 		if(playerScoreRoll1 == BowlingConstants.MAX_PINFALL_SCORE) {
 			System.out.print("X	");
 		}
 		else {
-			System.out.print(playerScoreRoll1 + "	");
+			if(player.getFrames()[BowlingConstants.LAST_FRAME].getRoll1().isFailed()) {
+				System.out.print("F	");
+			}
+			else {
+				System.out.print(playerScoreRoll1 + "	");
+			}
 		}
 		
+		// Roll 2
 		if(playerScoreRoll2 == BowlingConstants.MAX_PINFALL_SCORE) {
 			System.out.print("X	");
 		}
@@ -91,7 +98,7 @@ public class ScorePrinterService implements IScorePrinterService{
 			if(playerScoreRoll1 + playerScoreRoll2 == BowlingConstants.MAX_PINFALL_SCORE && playerScoreRoll1 != BowlingConstants.MAX_PINFALL_SCORE) {
 				System.out.print("/	");
 			}
-			if(player.getFrames()[BowlingConstants.LAST_FRAME].getRoll1().isFailed()) {
+			if(player.getFrames()[BowlingConstants.LAST_FRAME].getRoll2().isFailed()) {
 				System.out.print("F	");
 			}
 			else {
@@ -99,15 +106,16 @@ public class ScorePrinterService implements IScorePrinterService{
 			}
 		}
 		
+		// Bonus roll
 		if(playerBonusRoll == BowlingConstants.MAX_PINFALL_SCORE) {
 			System.out.print("X	");
 		}
-		else {
+		else if(playerBonusRoll != BowlingConstants.EMPTY_ROLL) {
 			
 			if(playerScoreRoll2 + playerBonusRoll == BowlingConstants.MAX_PINFALL_SCORE && playerScoreRoll2 != BowlingConstants.MAX_PINFALL_SCORE) {
 				System.out.print("/	");
 			}
-			if(player.getFrames()[BowlingConstants.LAST_FRAME].getRoll2().isFailed()) {
+			else if(player.getBonusRoll().isFailed()) {
 				System.out.print("F	");
 			}
 			else {
