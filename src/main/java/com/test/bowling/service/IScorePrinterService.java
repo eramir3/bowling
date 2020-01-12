@@ -4,5 +4,8 @@ import com.test.bowling.domain.Player;
 
 public interface IScorePrinterService {
 
-	public void printScoreTable(Player player);
+	public void printFrameNumbers();
+	
+	public void printPlayerData(Player player);
+	
 }

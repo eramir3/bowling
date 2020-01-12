@@ -1,5 +1,8 @@
 package com.test.bowling.service.impl;
 
+import java.util.Set;
+import java.util.Map.Entry;
+
 import org.springframework.stereotype.Service;
 
 import com.test.bowling.domain.Player;
@@ -9,22 +12,20 @@ import com.test.bowling.utils.BowlingConstants;
 @Service
 public class ScorePrinterService implements IScorePrinterService{
 
-	public void printScoreTable(Player player) {
+	
+	public void printPlayerData(Player player) {
 		
-		printFrameNumbers(player);
 		printPlayerName(player);
 		printFrames(player);
 		printLastFrame(player);
 		printScores(player);
 	}
 	
-	public void printFrameNumbers(Player player) {
+	public void printFrameNumbers() {
 		
-		if(player.getNumber() == BowlingConstants.PLAYER_ONE) {
-			System.out.print("Frame		");
-			for(int i = 0; i < BowlingConstants.LAST_FRAME + 1; i++) {
-				System.out.print(i + 1 + "		");
-			}
+		System.out.print("Frame		");
+		for(int i = 0; i < BowlingConstants.LAST_FRAME + 1; i++) {
+			System.out.print(i + 1 + "		");
 		}
 		System.out.println();
 	}
@@ -133,5 +134,7 @@ public class ScorePrinterService implements IScorePrinterService{
 		for(int i = 0; i < player.getFrames().length; i++) {
 			System.out.print(player.getFrames()[i].getScore() + "		");
 		}
+		
+		System.out.println();
 	}
 }
