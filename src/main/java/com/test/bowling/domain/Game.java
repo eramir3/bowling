@@ -61,7 +61,8 @@ public class Game {
 		} 
 		catch (Exception e) {
 			LOGGER.log(Level.SEVERE, e.getMessage());
-			e.printStackTrace();
+			//e.printStackTrace();
+			loadGameData();
 		}
 	}
 }

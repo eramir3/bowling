@@ -67,4 +67,4 @@ Tom 8
 Tom 1
 Mary 10
 Mary 9
-Mary 0
+Mary 4
