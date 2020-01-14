@@ -40,7 +40,16 @@ public class FileHandlerService implements IFileHandlerService {
 				
 				player = new Player(name, ++playerNumber);
 				for(int i = 0; i < player.getFrames().length; i++) {
-					Frame frame = new Frame(i);
+					
+					Frame frame = null;
+					
+					if(i == BowlingConstants.LAST_FRAME) {
+						 frame = new Frame(i, BowlingConstants.ROLLS_PER_FRAME + 1);
+					}
+					else {
+						 frame = new Frame(i, BowlingConstants.ROLLS_PER_FRAME);
+					}
+					
 					player.getFrames()[i] = frame;
 				}
 				
@@ -64,47 +73,48 @@ public class FileHandlerService implements IFileHandlerService {
     		}
 			
 			// Bonus roll
-			if(player.getFrames()[BowlingConstants.LAST_FRAME].getRoll2() != null) {
+			if(player.getFrames()[BowlingConstants.LAST_FRAME].getRolls()[BowlingConstants.ROLL_2] != null) {
 				
-				if(player.getBonusRoll() != null) {
+				
+				if(player.getFrames()[BowlingConstants.LAST_FRAME].getRolls()[BowlingConstants.BONUS_ROLL] != null) {
 					throw new Exception("File has more rolls than allowed for player " + player.getName());
 				}
 				
-				if(player.getFrames()[BowlingConstants.LAST_FRAME].getRoll1().getPinfalls() + player.getFrames()[BowlingConstants.LAST_FRAME].getRoll2().getPinfalls() < BowlingConstants.MAX_PINFALL_SCORE) {
+							
+				if(player.getFrames()[BowlingConstants.LAST_FRAME].getRolls()[BowlingConstants.ROLL_1].getPinfalls() 
+						+ player.getFrames()[BowlingConstants.LAST_FRAME].getRolls()[BowlingConstants.ROLL_2].getPinfalls() < BowlingConstants.MAX_PINFALL_SCORE) {
 					throw new Exception("No bonus roll allowed for player " + player.getName());
 				}
-				
+							
 				Roll bonusRoll = new Roll(pinfalls, failed);
-				player.setBonusRoll(bonusRoll);
+				player.getFrames()[BowlingConstants.LAST_FRAME].getRolls()[BowlingConstants.BONUS_ROLL] = bonusRoll;
 				continue;
 			}
-			
 			
 			for(int i = 0; i < player.getFrames().length; i++) {
 				
 				if(!player.getFrames()[i].isAvailable())
 					continue;
 				
-				if(player.getFrames()[i].getRoll1() == null) {
+				if(player.getFrames()[i].getRolls()[BowlingConstants.ROLL_1] == null) {
 					
 					Roll roll1 = new Roll(pinfalls, failed);
-					player.getFrames()[i].setRoll1(roll1);
+					player.getFrames()[i].getRolls()[BowlingConstants.ROLL_1] = roll1;
 					
 					if(pinfalls == BowlingConstants.MAX_PINFALL_SCORE && player.getFrames()[i].getNumber() < BowlingConstants.LAST_FRAME) {
 						Roll roll2 = new Roll(BowlingConstants.EMPTY_ROLL, false);
-						player.getFrames()[i].setRoll2(roll2);
+						player.getFrames()[i].getRolls()[BowlingConstants.ROLL_2] = roll2;
 						player.getFrames()[i].setAvailable(false);
 					}
 				}
 				else {
 					Roll roll = new Roll(pinfalls, failed);
-					player.getFrames()[i].setRoll2(roll);
+					player.getFrames()[i].getRolls()[BowlingConstants.ROLL_2] = roll;
 					player.getFrames()[i].setAvailable(false);
 				}	
 				
 				break;
 			}
-			
 		}
 		
 		closeFile();

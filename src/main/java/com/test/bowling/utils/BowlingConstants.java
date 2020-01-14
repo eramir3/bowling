@@ -19,4 +19,12 @@ public class BowlingConstants {
 	public static final int PLAYER_ONE = 1;
 	
 	public static final int TOTAL_FRAMES = 10;
+	
+	public static final int ROLLS_PER_FRAME = 2;
+	
+	public static final int ROLL_1 = 0;
+	
+	public static final int ROLL_2 = 1;
+	
+	public static final int BONUS_ROLL = 2;
 }

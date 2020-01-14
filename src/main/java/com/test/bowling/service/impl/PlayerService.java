@@ -16,8 +16,8 @@ public class PlayerService implements IPlayerService{
 		
 		for(int i = 0; i < player.getFrames().length; i++) {
 			
-			int scoreRoll1 = player.getFrames()[i].getRoll1().getPinfalls();
-			int scoreRoll2 = player.getFrames()[i].getRoll2().getPinfalls() != BowlingConstants.EMPTY_ROLL ? player.getFrames()[i].getRoll2().getPinfalls() : 0;
+			int scoreRoll1 = player.getFrames()[i].getRolls()[BowlingConstants.ROLL_1].getPinfalls();
+			int scoreRoll2 = player.getFrames()[i].getRolls()[BowlingConstants.ROLL_2].getPinfalls() != BowlingConstants.EMPTY_ROLL ? player.getFrames()[i].getRolls()[BowlingConstants.ROLL_2].getPinfalls() : 0;
 			
 			total = scoreRoll1 + scoreRoll2;
 			
@@ -33,7 +33,7 @@ public class PlayerService implements IPlayerService{
 			}
 			
 			if(i == BowlingConstants.LAST_FRAME) {
-				total += player.getBonusRoll() != null ? player.getBonusRoll().getPinfalls() : 0;
+				total += player.getFrames()[i].getRolls()[BowlingConstants.BONUS_ROLL] != null ?  player.getFrames()[i].getRolls()[BowlingConstants.BONUS_ROLL].getPinfalls() : 0;
 			}
 			
 			player.getFrames()[i].setScore(total);
@@ -50,8 +50,8 @@ public class PlayerService implements IPlayerService{
 		
 		while(aux > 0) {
 			
-			int scoreRoll1 = player.getFrames()[frame].getRoll1().getPinfalls();
-			int scoreRoll2 = player.getFrames()[frame].getRoll2().getPinfalls();
+			int scoreRoll1 = player.getFrames()[frame].getRolls()[BowlingConstants.ROLL_1].getPinfalls();
+			int scoreRoll2 = player.getFrames()[frame].getRolls()[BowlingConstants.ROLL_2].getPinfalls();
 			
 			if(scoreRoll1 != BowlingConstants.EMPTY_ROLL) {
 				total += scoreRoll1;
@@ -74,6 +74,6 @@ public class PlayerService implements IPlayerService{
 	
 	public int calculateSpare(Player player, int frame) {
 		
-		return player.getFrames()[frame].getRoll1().getPinfalls();
+		return  player.getFrames()[frame].getRolls()[BowlingConstants.ROLL_1].getPinfalls();
 	}
 }

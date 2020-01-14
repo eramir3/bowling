@@ -38,8 +38,8 @@ public class ScorePrinterService implements IScorePrinterService{
 		
 		for(int i = 0; i < player.getFrames().length - 1; i++) {
 			
-			int playerScoreRoll1 = player.getFrames()[i].getRoll1().getPinfalls();
-			int playerScoreRoll2 = player.getFrames()[i].getRoll2().getPinfalls();
+			int playerScoreRoll1 = player.getFrames()[i].getRolls()[BowlingConstants.ROLL_1].getPinfalls();
+			int playerScoreRoll2 = player.getFrames()[i].getRolls()[BowlingConstants.ROLL_2].getPinfalls();
 			
 			if(playerScoreRoll1 == BowlingConstants.MAX_PINFALL_SCORE) {
 				System.out.print("	X	");
@@ -52,14 +52,14 @@ public class ScorePrinterService implements IScorePrinterService{
 			}
 			else {
 				
-				if(player.getFrames()[i].getRoll1().isFailed()) {
+				if(player.getFrames()[i].getRolls()[BowlingConstants.ROLL_1].isFailed()) {
 					System.out.print("F	");
 				}
 				else {
 					System.out.print(playerScoreRoll1 + "	");
 				}
 				
-				if(player.getFrames()[i].getRoll2().isFailed()) {
+				if(player.getFrames()[i].getRolls()[BowlingConstants.ROLL_2].isFailed()) {
 					System.out.print("F	");
 				}
 				else {
@@ -71,9 +71,9 @@ public class ScorePrinterService implements IScorePrinterService{
 	
 	public void printLastFrame(Player player) {
 		
-		int playerScoreRoll1 = player.getFrames()[BowlingConstants.LAST_FRAME].getRoll1().getPinfalls();
-		int playerScoreRoll2 = player.getFrames()[BowlingConstants.LAST_FRAME].getRoll2().getPinfalls();
-		int playerBonusRoll = player.getBonusRoll() != null ? player.getBonusRoll().getPinfalls() : BowlingConstants.EMPTY_ROLL;
+		int playerScoreRoll1 = player.getFrames()[BowlingConstants.LAST_FRAME].getRolls()[BowlingConstants.ROLL_1].getPinfalls();
+		int playerScoreRoll2 = player.getFrames()[BowlingConstants.LAST_FRAME].getRolls()[BowlingConstants.ROLL_2].getPinfalls();
+		int playerBonusRoll = player.getFrames()[BowlingConstants.LAST_FRAME].getRolls()[BowlingConstants.BONUS_ROLL] != null ? player.getFrames()[BowlingConstants.LAST_FRAME].getRolls()[BowlingConstants.BONUS_ROLL].getPinfalls() : BowlingConstants.EMPTY_ROLL;
 		
 		printLastFrameRoll1(player, playerScoreRoll1);
 		printLastFrameRoll2(player, playerScoreRoll1, playerScoreRoll2);
@@ -84,7 +84,7 @@ public class ScorePrinterService implements IScorePrinterService{
 	
 	public void printLastFrameRoll1(Player player, int playerScoreRoll1) {
 		
-		if(player.getFrames()[BowlingConstants.LAST_FRAME].getRoll1().isFailed()) {
+		if(player.getFrames()[BowlingConstants.LAST_FRAME].getRolls()[BowlingConstants.ROLL_1].isFailed()) {
 			System.out.print("F	");
 		}
 		else {
@@ -99,7 +99,7 @@ public class ScorePrinterService implements IScorePrinterService{
 	
 	public void printLastFrameRoll2(Player player, int playerScoreRoll1, int playerScoreRoll2) {
 		
-		if(player.getFrames()[BowlingConstants.LAST_FRAME].getRoll2().isFailed()) {
+		if(player.getFrames()[BowlingConstants.LAST_FRAME].getRolls()[BowlingConstants.ROLL_2].isFailed()) {
 			System.out.print("F	");
 		}
 		else {
@@ -117,7 +117,7 @@ public class ScorePrinterService implements IScorePrinterService{
 	
 	public void printLastFrameBonusRoll(Player player, int playerScoreRoll2, int playerBonusRoll) {
 		
-		if(player.getBonusRoll().isFailed()) {
+		if(player.getFrames()[BowlingConstants.LAST_FRAME].getRolls()[BowlingConstants.BONUS_ROLL].isFailed()) {
 			System.out.print("F	");
 		}
 		

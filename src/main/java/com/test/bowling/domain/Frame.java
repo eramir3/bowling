@@ -4,35 +4,26 @@ public class Frame {
 	
 	private int number;
 
-	private Roll roll1;
-	
-	private Roll roll2;
+	private Roll[] rolls;
 	
 	private int score;
 	
 	private boolean isAvailable;
 	
 
-	public Frame(int number) {
+	public Frame(int number, int rolls) {
 		super();
 		this.number = number;
+		this.rolls = new Roll[rolls];
 		this.isAvailable = true;
 	}
-
-	public Roll getRoll1() {
-		return roll1;
+	
+	public Roll[] getRolls() {
+		return rolls;
 	}
 
-	public void setRoll1(Roll roll1) {
-		this.roll1 = roll1;
-	}
-
-	public Roll getRoll2() {
-		return roll2;
-	}
-
-	public void setRoll2(Roll roll2) {
-		this.roll2 = roll2;
+	public void setRolls(Roll[] rolls) {
+		this.rolls = rolls;
 	}
 
 	public int getNumber() {

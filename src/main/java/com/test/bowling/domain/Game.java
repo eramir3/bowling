@@ -2,7 +2,6 @@ package com.test.bowling.domain;
 
 import java.util.Map.Entry;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

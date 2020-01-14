@@ -10,8 +10,6 @@ public class Player {
 	
 	private Frame[] frames;
 	
-	private Roll bonusRoll;
-	
 	 
 	public Player(String name, int number) {
 		this.name = name;
@@ -33,14 +31,6 @@ public class Player {
 
 	public void setNumber(int number) {
 		this.number = number;
-	}
-	
-	public Roll getBonusRoll() {
-		return bonusRoll;
-	}
-
-	public void setBonusRoll(Roll bonusRoll) {
-		this.bonusRoll = bonusRoll;
 	}
 	
 	public Frame[] getFrames() {
